@@ -1,4 +1,5 @@
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:http/http.dart' as http;
 
 class GoogleSignInService{
 
@@ -13,10 +14,27 @@ class GoogleSignInService{
     try {
       
       final GoogleSignInAccount account = await _googleSignIn.signIn();
-      
-      print(account);
+      final googleKey = await account.authentication;
 
-      // TODO idToken
+      // print('========== ID TOKEN ==========');
+      // print(account);
+      // print( googleKey.idToken );
+
+      final signinWithGoogleEndpoint = Uri(
+        scheme: 'https',
+        host: 'signin-auth-backend.herokuapp.com',
+        path: 'google'
+      );
+
+      final session = await http.post(
+        signinWithGoogleEndpoint,
+        body: {
+          'token': googleKey.idToken
+        }
+      );
+
+      print('========= BACKEND SERVER ========');
+      print( session.body );
 
       return account;
 
